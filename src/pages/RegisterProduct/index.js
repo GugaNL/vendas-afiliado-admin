@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,21 +20,18 @@ import {
   BtnConfirm,
   ContainerTicket,
   ContentLoader,
+  EmptyErrorText
 } from "./styles";
 import { CheckAuthContext } from "../../contexts";
 import ContentHeader from "../../components/ContentHeader";
-import { ImageTypeRegex, baseURL } from "../../constants";
-import {
-  newPrizeDraw,
-  findPrizeDraw,
-  updatePrizeDraw,
-  updateImages,
-} from "../../services/api";
+import { ImageTypeRegex } from "../../constants";
+import { newProduct, updateProduct, listCategories } from "../../services/api";
 
 const RegisterProduct = () => {
   const { setIsLogged } = useContext(CheckAuthContext);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [categories, setCategories] = useState([]);
   const productToEdit = searchParams.get("productToEdit") || null;
   const [values, setValues] = useState({
     id: null,
@@ -36,7 +39,7 @@ const RegisterProduct = () => {
     brand: "",
     store: "",
     linkAfiliate: "",
-    category: "",
+    categoryId: "",
     oldPrice: "",
     newPrice: "",
     discount: "",
@@ -44,6 +47,8 @@ const RegisterProduct = () => {
     obs2: "",
     productImage: [],
   });
+  const [categoryErrorMsg, setCategoryErrorMsg] = useState("");
+  const [titleErrorMsg, setTitleErrorMsg] = useState("");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -73,15 +78,6 @@ const RegisterProduct = () => {
     }
   };
 
-  const loadPrizeDescription = (prizeDescription) => {
-    // const arrayDesc = prizeDescription?.split(";") || [];
-    // const formattedArrayDesc =
-    //   arrayDesc.map((item, index) => {
-    //     return { id: index + 1, desc: item };
-    //   }) || [];
-    // return formattedArrayDesc;
-  };
-
   const loadPrizeDraw = async () => {
     // setLoading(true);
     // const response = await findPrizeDraw(prizeDrawToEdit);
@@ -90,21 +86,17 @@ const RegisterProduct = () => {
     //   const { sorteio = {}, imagens = [] } = responseFindPrizeDraw;
     //   let prizeDate = "";
     //   let prizeTime = "";
-
     //   const prizeDescriptionFormatted = loadPrizeDescription(
     //     sorteio.descricao
     //   ) || [{ id: 1, desc: "" }];
-
     //   if (sorteio.data) {
     //     sorteio.data = new Date(sorteio.data).toLocaleString("pt-BR");
     //     prizeDate = sorteio.data.split(" ")[0];
     //     prizeTime = sorteio.data.split(" ")[1];
     //   }
-
     //   const formattedImages = imagens.map((el) => {
     //     return el.path;
     //   });
-
     //   setValues({
     //     id: sorteio.id,
     //     title: sorteio.titulo,
@@ -122,13 +114,41 @@ const RegisterProduct = () => {
     // }
   };
 
+  const loadCategories = useCallback(async () => {
+    const response = await listCategories();
+    const { data: responseCategories = {} } = response;
+    if (responseCategories && responseCategories.success) {
+      const { categories = [] } = responseCategories;
+      categories.unshift({ id: "", name: "Selecione uma categoria" });
+      setCategories(categories);
+    } else {
+      if (response === 401) {
+        setIsLogged();
+      } else {
+        toast.error("Falha ao listar as categorias", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: false,
+          progress: undefined,
+        });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
   useEffect(() => {
     if (productToEdit) {
       loadPrizeDraw();
     }
   }, [productToEdit]);
 
-  const onChangeInput = (element, descId = null) => {
+  const onChangeInput = (element) => {
     const inputName = element.name;
     const inputValue = element.value;
 
@@ -139,10 +159,11 @@ const RegisterProduct = () => {
     if (imageFiles.length < 1) return;
 
     const newImageUrls = [];
-    newImageUrls.push(URL.createObjectURL(imageFiles[0]))
+    newImageUrls.push(URL.createObjectURL(imageFiles[0]));
     setValues({
-      productImage: newImageUrls
-    })
+      ...values,
+      productImage: newImageUrls,
+    });
   }, [imageFiles]);
 
   const onImageChange = (evt) => {
@@ -160,16 +181,53 @@ const RegisterProduct = () => {
       setUploadedImages([...arrayAuxImages]);
     } else {
       setImageFiles([]);
-      setValues({ productImage: []})
+      setValues({ ...values, productImage: [] });
     }
   };
 
-  const mountPrizeDesc = (desc) => {
+  const saveProduct = async () => {
+    if (!values.title) {
+      return setTitleErrorMsg("Nome obrigatório");
+    }
 
-  };
+    if (!values.categoryId) {
+      return setCategoryErrorMsg("Categoria obrigatória");
+    }
 
-  const savePrizeDraw = async () => {
-   
+    setLoading(true);
+    const payload = {
+      ...values,
+      productImage: imageFiles,
+    };
+
+    if (!values.id) {
+      const response = await newProduct(payload);
+      const { data: responseSaveProduct = {} } = response;
+      if (responseSaveProduct && responseSaveProduct.success) {
+        showToast("Produto criado com sucesso", "success");
+      } else {
+        setLoading(false);
+        if (response === 401) {
+          setIsLogged();
+        } else {
+          showToast("Falha ao tentar cadastrar o produto", "error");
+        }
+      }
+    } else {
+      const response = await updateProduct(payload);
+      const { data: responseUpdateProduct = {} } = response;
+      if (responseUpdateProduct && responseUpdateProduct.success) {
+        setLoading(false);
+        showToast("Produto alterado com sucesso", "success");
+      } else {
+        setLoading(false);
+        if (response === 401) {
+          setIsLogged();
+        } else {
+          showToast("Falha ao tentar alterar o produto", "error");
+        }
+      }
+    }
   };
 
   return (
@@ -205,6 +263,7 @@ const RegisterProduct = () => {
               value={values.title || ""}
               onChange={(event) => onChangeInput(event.target)}
             />
+            {titleErrorMsg && <EmptyErrorText>{titleErrorMsg}</EmptyErrorText>}
           </FieldContent>
 
           <FieldContent>
@@ -218,6 +277,27 @@ const RegisterProduct = () => {
               value={values.linkAfiliate || ""}
               onChange={(event) => onChangeInput(event.target)}
             />
+          </FieldContent>
+
+          <FieldContent>
+            <label>Categoria</label>
+            <select
+              name="categoryId"
+              value={values.categoryId}
+              onChange={(evt) => onChangeInput(evt.target)}
+            >
+              {categories.length > 0 &&
+                categories.map((item, index) => (
+                  <option
+                    value={item.id}
+                    key={index}
+                    //selected={item.name === values.categoryId}
+                  >
+                    {item.name}
+                  </option>
+                ))}
+            </select>
+            {categoryErrorMsg && <EmptyErrorText>{categoryErrorMsg}</EmptyErrorText>}
           </FieldContent>
 
           <ContainerTicket>
@@ -257,7 +337,6 @@ const RegisterProduct = () => {
               </ContentUploadImage>
             )}
           </ContainerImagesUpload>
-
 
           <FieldContent>
             <label>Imagem</label>
@@ -346,7 +425,7 @@ const RegisterProduct = () => {
           </FieldContent>
 
           <BtnConfirm>
-            <button onClick={() => savePrizeDraw()}>
+            <button onClick={() => saveProduct()}>
               {values.id ? "Salvar" : "Criar"}
             </button>
           </BtnConfirm>

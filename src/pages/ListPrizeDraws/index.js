@@ -5,7 +5,7 @@ import { Puff } from "react-loader-spinner";
 import { Container, Content, FiltersLegends, ContentLoader } from "./styles";
 import ContentHeader from "../../components/ContentHeader";
 import CardList from "../../components/CardList";
-import { listPrizeDraws } from "../../services/api";
+//import { listPrizeDraws } from "../../services/api";
 
 
 const ListPrizeDraws = () => {
@@ -15,25 +15,25 @@ const ListPrizeDraws = () => {
 
 
   const fetchList = async () => {
-    const response = await listPrizeDraws();
-    const { data: responseListPrizeDraws = { } } = response;
+    // const response = await listPrizeDraws();
+    // const { data: responseListPrizeDraws = { } } = response;
 
-    if (responseListPrizeDraws && responseListPrizeDraws.success) {
-      setLoading(false);
-      const {sorteios = []} = responseListPrizeDraws;
-      setPrizeDraws(sorteios);
-    } else {
-      setLoading(false);
-      toast.error("Falha ao listar sorteios", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-      });
-    }
+    // if (responseListPrizeDraws && responseListPrizeDraws.success) {
+    //   setLoading(false);
+    //   const {sorteios = []} = responseListPrizeDraws;
+    //   setPrizeDraws(sorteios);
+    // } else {
+    //   setLoading(false);
+    //   toast.error("Falha ao listar sorteios", {
+    //     position: "top-right",
+    //     autoClose: 2000,
+    //     hideProgressBar: true,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: false,
+    //     progress: undefined,
+    //   });
+    // }
   };
 
   useEffect(() => {

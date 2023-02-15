@@ -16,6 +16,13 @@ export const FieldContent = styled.div`
     margin-top: 3px;
   }
 
+  > select {
+    padding: 8px;
+    border-radius: 5px;
+    width: 350px;
+    margin-top: 3px;
+  }
+
   .btn-add {
     width: fit-content;
     margin-top: 10px;
@@ -60,8 +67,6 @@ export const FieldContent = styled.div`
   .input-discount {
     width: 150px;
   }
-
-  
 `;
 
 export const ContentInputDesc = styled.div`
@@ -213,7 +218,10 @@ export const BtnNumbers = styled.div`
   }
 `;
 
+export const inputBrand = styled.input``;
 
-export const inputBrand = styled.input`
-
-`
+export const EmptyErrorText = styled.span`
+  font-size: 14px;
+  color: ${(props) => props.theme.color.darkBlue};
+  margin-top: 3px;
+`;

@@ -28,15 +28,19 @@ export const loginUser = async (email, password) => {
 //Produto
 export const newProduct = async (product = {}) => {
   const formData = new FormData();
+  const { productImage = [] } = product;
 
-  formData.append("titulo", product?.title);
+  formData.append("title", product?.title);
   formData.append("brand", product?.brand);
   formData.append("store", product?.store);
   formData.append("linkAfiliate", product?.linkAfiliate);
-  formData.append("totalBilhetes", prizeDraw.totalBilhetes);
-  formData.append("valorBilhete", prizeDraw.valorBilhete);
-  formData.append("sorteioImage", sorteioImages[i]);
-
+  formData.append("uploadedImage", productImage[0]);
+  formData.append("categoryId", product?.categoryId);
+  formData.append("oldPrice", product?.oldPrice);
+  formData.append("newPrice", product?.newPrice);
+  formData.append("discount", product?.discount);
+  formData.append("obs1", product?.obs1);
+  formData.append("obs2", product?.obs2);
 
   try {
     const response = await api.post("produto/novo", formData, {
@@ -46,6 +50,58 @@ export const newProduct = async (product = {}) => {
       },
     });
 
+    return response;
+  } catch (error) {
+    const { response: { data = [], status = "" } = "" } = error;
+    if (status === 401) {
+      return status;
+    }
+    return data[0];
+  }
+};
+
+export const updateProduct = async (product = {}) => {
+  const formData = new FormData();
+  const { productImage = [] } = product;
+
+  formData.append("title", product?.title);
+  formData.append("brand", product?.brand);
+  formData.append("store", product?.store);
+  formData.append("linkAfiliate", product?.linkAfiliate);
+  formData.append("uploadedImage", productImage[0]);
+  formData.append("categoryId", product?.categoryId);
+  formData.append("oldPrice", product?.oldPrice);
+  formData.append("newPrice", product?.newPrice);
+  formData.append("discount", product?.discount);
+  formData.append("obs1", product?.obs1);
+  formData.append("obs2", product?.obs2);
+
+  try {
+    const response = await api.post(`produto/${product.id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        token,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    const { response: { data = [], status = "" } = "" } = error;
+    if (status === 401) {
+      return status;
+    }
+    return data[0];
+  }
+};
+
+//Categoria
+export const listCategories = async () => {
+  try {
+    const response = await api.get("categoria/lista", {
+      headers: {
+        token,
+      },
+    });
     return response;
   } catch (error) {
     const { response: { data = [], status = "" } = "" } = error;
