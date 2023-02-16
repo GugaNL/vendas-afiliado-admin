@@ -98,7 +98,7 @@ export const updateProduct = async (product = {}) => {
 
 export const listProducts = async (page, limit) => {
   try {
-    const response = await api.get(`produto/lista?page=${page}&limit=${limit}`);
+    const response = await api.get(`produto/lista-leve?page=${page}&limit=${limit}`);
     return response;
   } catch (error) {
     const { response: { data = [] } = "" } = error;
