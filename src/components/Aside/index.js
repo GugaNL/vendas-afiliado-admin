@@ -12,9 +12,10 @@ import {
 import logo from "../../assets/logo.svg";
 import { menuItems } from "../../utils";
 import {
-  FaStaylinked,
-  FaWpforms,
-  FaAddressBook,
+  FaBoxOpen,
+  FaBoxes,
+  FaClipboardList,
+  FaInbox,
   FaSignOutAlt,
   FaRegLifeRing,
 } from "react-icons/fa";
@@ -30,12 +31,14 @@ const Aside = () => {
   };
 
   const renderIcon = (itemIcon) => {
-    if (itemIcon === "FaStaylinked") {
-      return <FaStaylinked />;
-    } else if (itemIcon === "FaWpforms") {
-      return <FaWpforms />;
-    } else if (itemIcon === "FaAddressBook") {
-      return <FaAddressBook />;
+    if (itemIcon === "FaBoxOpen") {
+      return <FaBoxOpen />;
+    } else if (itemIcon === "FaClipboardList") {
+      return <FaClipboardList />;
+    } else if (itemIcon === "FaBoxes") {
+      return <FaBoxes />;
+    } else if (itemIcon == "FaInbox") {
+      return <FaInbox />
     }
     return <FaRegLifeRing />;
   };

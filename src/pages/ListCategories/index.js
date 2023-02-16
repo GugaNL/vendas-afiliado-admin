@@ -4,30 +4,30 @@ import "react-toastify/dist/ReactToastify.css";
 import { Puff } from "react-loader-spinner";
 import { Container, Content, ContentLoader } from "./styles";
 import ContentHeader from "../../components/ContentHeader";
-import CardListCustomer from "../../components/CardListCustomer";
-import { listCustomers } from "../../services/api";
+import CardListCategory from "../../components/CardListCategory";
+import { listCategories } from "../../services/api";
 import {CheckAuthContext} from "../../contexts";
 
-const ListCustomers = () => {
+const ListCategories = () => {
   const { setIsLogged } = useContext(CheckAuthContext);
-  const [customers, setCustomers] = useState([]);
-  const [appliedFilter, setAppliedFilter] = useState("");
+  const [categories, setCategories] = useState([]);
+  //const [appliedFilter, setAppliedFilter] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchList = async () => {
-    const response = await listCustomers();
-    const { data: responseListCustomers = {} } = response;
+    const response = await listCategories();
+    const { data: responseListCategories = {} } = response;
 
-    if (responseListCustomers && responseListCustomers.success) {
+    if (responseListCategories && responseListCategories.success) {
       setLoading(false);
-      const { clientes = [] } = responseListCustomers;
-      setCustomers(clientes);
+      const { categories = [] } = responseListCategories;
+      setCategories(categories);
     } else {
       setLoading(false);
       if (response === 401) {
         setIsLogged();
       } else {
-        toast.error("Falha ao listar os clientes", {
+        toast.error("Falha ao listar as categorias", {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: true,
@@ -45,16 +45,16 @@ const ListCustomers = () => {
   }, []);
 
   const filterList = (filterStatus) => {
-    if (filterStatus === appliedFilter) {
-      setCustomers(customers);
-      setAppliedFilter("");
-    } else {
-      setAppliedFilter(filterStatus);
-      const filteredList = customers.filter(
-        (item) => item.status === filterStatus
-      );
-      setCustomers(filteredList);
-    }
+    // if (filterStatus === appliedFilter) {
+    //   setCategories(categories);
+    //   setAppliedFilter("");
+    // } else {
+    //   setAppliedFilter(filterStatus);
+    //   const filteredList = categories.filter(
+    //     (item) => item.status === filterStatus
+    //   );
+    //   setCategories(filteredList);
+    // }
   };
 
   return (
@@ -73,11 +73,11 @@ const ListCustomers = () => {
           />
         </ContentLoader>
       )}
-      <ContentHeader title="Clientes" showFilters={false} />
+      <ContentHeader title="Categorias" showFilters={false} />
       <Content>
-        {customers.length > 0 &&
-          customers.map((item, index) => (
-            <CardListCustomer item={item} key={index} />
+        {categories.length > 0 &&
+          categories.map((item, index) => (
+            <CardListCategory item={item} key={index} />
           ))}
       </Content>
       <ToastContainer />
@@ -85,4 +85,4 @@ const ListCustomers = () => {
   );
 };
 
-export default ListCustomers;
+export default ListCategories;

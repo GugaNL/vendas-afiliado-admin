@@ -117,9 +117,79 @@ export const findProduct = async (id) => {
 };
 
 //Categoria
+export const createCategory = async (category) => {
+  try {
+    const response = await api.post("categoria/novo", {
+      name: category.name
+    }, {
+      headers: {
+        token,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    const { response: { data = [] } = "", status = "" } = error;
+    if (status === 401) {
+      return status;
+    }
+    return data[0];
+  }
+};
+
 export const listCategories = async () => {
   try {
     const response = await api.get("categoria/lista", {
+      headers: {
+        token,
+      },
+    });
+    return response;
+  } catch (error) {
+    const { response: { data = [], status = "" } = "" } = error;
+    if (status === 401) {
+      return status;
+    }
+    return data[0];
+  }
+};
+
+export const findCategory = async (id) => {
+  try {
+    const response = await api.get(`categoria/${id}`);
+    return response;
+  } catch (error) {
+    const { response: { data = [] } = "" } = error;
+    return data[0];
+  }
+};
+
+export const updateCategory = async (category) => {
+  try {
+    const response = await api.put(
+      `categoria/${category.id}`,
+      {
+        name: category.name,
+      },
+      {
+        headers: {
+          token,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    const { response: { data = [], status = "" } = "" } = error;
+    if (status === 401) {
+      return status;
+    }
+    return data[0];
+  }
+};
+
+export const removeCategory = async (categoryId) => {
+  try {
+    const response = await api.delete(`categoria/${categoryId}`, {
       headers: {
         token,
       },

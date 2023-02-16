@@ -11,6 +11,7 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   overflow: auto;
+  z-index: 100;
 `;
 
 export const Content = styled.div`
@@ -50,9 +51,10 @@ export const Footer = styled.div`
 
 export const ContentButtons = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   margin-top: 32px;
+  flex-direction: revert;
+  justify-content: center;
 
   > button {
     margin: 16px;
