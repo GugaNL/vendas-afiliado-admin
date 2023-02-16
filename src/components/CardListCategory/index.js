@@ -14,7 +14,6 @@ const CardListCategory = (props) => {
   const { item = {} } = props;
   const { setIsLogged } = useContext(CheckAuthContext);
   const navigate = useNavigate();
-  const [showRemoveBtn, setShowRemoveBtn] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -89,7 +88,7 @@ const CardListCategory = (props) => {
       {showModal && (
         <ModalQuestion
           title="Atenção"
-          description={`Deseja remover a categoria ${item.name}?`}
+          description={`Deseja remover a categoria ${item?.name}?`}
           textBtnConfirm="Confirmar"
           handleConfirm={() => confirmDelete()}
           handleCloseModal={() => setShowModal(false)}
@@ -100,7 +99,9 @@ const CardListCategory = (props) => {
         onClick={() =>
           navigate({
             pathname: PAGE_NEW_CATEGORY,
-            search: createSearchParams({ categoryToEdit: item.id }).toString(),
+            search: createSearchParams({
+              categoryToEdit: item.id,
+            }).toString(),
           })
         }
       >
@@ -111,6 +112,7 @@ const CardListCategory = (props) => {
       <BtnRemove onClick={() => setShowModal(true)}>
         <FaTrashAlt />
       </BtnRemove>
+      <ToastContainer />
     </Root>
   );
 };

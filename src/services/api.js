@@ -116,6 +116,23 @@ export const findProduct = async (id) => {
   }
 };
 
+export const removeProduct = async (id) => {
+  try {
+    const response = await api.delete(`produto/${id}`, {
+      headers: {
+        token,
+      },
+    });
+    return response;
+  } catch (error) {
+    const { response: { data = [], status = "" } = "" } = error;
+    if (status === 401) {
+      return status;
+    }
+    return data[0];
+  }
+};
+
 //Categoria
 export const createCategory = async (category) => {
   try {

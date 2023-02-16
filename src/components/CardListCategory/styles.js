@@ -59,8 +59,8 @@ export const BtnCard = styled.a`
 `;
 
 export const BtnRemove = styled.button`
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 5px;
   margin-left: 15px;
   background-color: ${(props) => props.theme.color.orange};
