@@ -68,7 +68,9 @@ export const updateProduct = async (product = {}) => {
   formData.append("brand", product?.brand);
   formData.append("store", product?.store);
   formData.append("linkAfiliate", product?.linkAfiliate);
-  formData.append("uploadedImage", productImage[0]);
+  if (productImage.length > 0) {
+    formData.append("uploadedImage", productImage[0]);
+  }
   formData.append("categoryId", product?.categoryId);
   formData.append("oldPrice", product?.oldPrice);
   formData.append("newPrice", product?.newPrice);
@@ -77,7 +79,7 @@ export const updateProduct = async (product = {}) => {
   formData.append("obs2", product?.obs2);
 
   try {
-    const response = await api.post(`produto/${product.id}`, formData, {
+    const response = await api.put(`produto/${product.id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         token,
@@ -97,6 +99,16 @@ export const updateProduct = async (product = {}) => {
 export const listProducts = async (page, limit) => {
   try {
     const response = await api.get(`produto/lista?page=${page}&limit=${limit}`);
+    return response;
+  } catch (error) {
+    const { response: { data = [] } = "" } = error;
+    return data[0];
+  }
+};
+
+export const findProduct = async (id) => {
+  try {
+    const response = await api.get(`produto/${id}`);
     return response;
   } catch (error) {
     const { response: { data = [] } = "" } = error;

@@ -24,8 +24,8 @@ import {
 } from "./styles";
 import { CheckAuthContext } from "../../contexts";
 import ContentHeader from "../../components/ContentHeader";
-import { ImageTypeRegex } from "../../constants";
-import { newProduct, updateProduct, listCategories } from "../../services/api";
+import { ImageTypeRegex, baseURL } from "../../constants";
+import { newProduct, updateProduct, listCategories, findProduct } from "../../services/api";
 
 const RegisterProduct = () => {
   const { setIsLogged } = useContext(CheckAuthContext);
@@ -78,40 +78,40 @@ const RegisterProduct = () => {
     }
   };
 
-  const loadPrizeDraw = async () => {
-    // setLoading(true);
-    // const response = await findPrizeDraw(prizeDrawToEdit);
-    // const { data: responseFindPrizeDraw = {} } = response;
-    // if (responseFindPrizeDraw && responseFindPrizeDraw.success) {
-    //   const { sorteio = {}, imagens = [] } = responseFindPrizeDraw;
-    //   let prizeDate = "";
-    //   let prizeTime = "";
-    //   const prizeDescriptionFormatted = loadPrizeDescription(
-    //     sorteio.descricao
-    //   ) || [{ id: 1, desc: "" }];
-    //   if (sorteio.data) {
-    //     sorteio.data = new Date(sorteio.data).toLocaleString("pt-BR");
-    //     prizeDate = sorteio.data.split(" ")[0];
-    //     prizeTime = sorteio.data.split(" ")[1];
-    //   }
-    //   const formattedImages = imagens.map((el) => {
-    //     return el.path;
-    //   });
-    //   setValues({
-    //     id: sorteio.id,
-    //     title: sorteio.titulo,
-    //     prize: sorteio.premio,
-    //     datePrizeDraw: prizeDate,
-    //     timePrizeDraw: prizeTime,
-    //     prizeDescription: prizeDescriptionFormatted,
-    //     ticketValue: sorteio.valorBilhete,
-    //     ticketQuantity: sorteio.totalBilhetes,
-    //   });
-    //   setUploadedImages(formattedImages);
-    //   setLoading(false);
-    // } else {
-    //   setLoading(false);
-    // }
+  const loadProduct = async () => {
+     setLoading(true);
+     const response = await findProduct(productToEdit);
+     const { data: responseFindProduct = {} } = response;
+     if (responseFindProduct && responseFindProduct.success) {
+      const { product = {} } = responseFindProduct;
+      const imageUrl = product.imagePath ? baseURL + product.imagePath : "";
+      setValues({
+        id: product.id || null,
+        title: product.title || "",
+        brand: product.brand || "",
+        store: product.store || "",
+        linkAfiliate: product.linkAfiliate || "",
+        categoryId: product.categoryId || "",
+        oldPrice: product.oldPrice || "",
+        newPrice: product.newPrice || "",
+        discount: product.discount || "",
+        obs1: product.obs1 || "",
+        obs2: product.obs2 || "",
+        productImage: [imageUrl]
+      })
+      setUploadedImages([product.imagePath]);
+      setLoading(false);
+     } else {
+      toast.error("Falha ao carregar o produto", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+      });
+     }
   };
 
   const loadCategories = useCallback(async () => {
@@ -144,7 +144,7 @@ const RegisterProduct = () => {
 
   useEffect(() => {
     if (productToEdit) {
-      loadPrizeDraw();
+      loadProduct();
     }
   }, [productToEdit]);
 
@@ -328,9 +328,9 @@ const RegisterProduct = () => {
           </ContainerTicket>
 
           <ContainerImagesUpload>
-            {values.productImage.length > 0 && (
+            {values.productImage && values.productImage.length > 0 && (
               <ContentUploadImage>
-                <img src={values.productImage} alt="imagem para upload" />
+                <img src={values.productImage[0]} alt="imagem para upload" />
                 <BtnDeleteImg onClick={() => removeImage(false)}>
                   <MdDelete />
                 </BtnDeleteImg>
