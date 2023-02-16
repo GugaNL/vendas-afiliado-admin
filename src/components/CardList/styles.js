@@ -55,4 +55,5 @@ export const BtnCard = styled.a`
   flex-direction: column;
   justify-content: space-between;
   padding-left: 10px;
+  font-weight: 700;
 `;

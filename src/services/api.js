@@ -94,6 +94,16 @@ export const updateProduct = async (product = {}) => {
   }
 };
 
+export const listProducts = async (page, limit) => {
+  try {
+    const response = await api.get(`produto/lista?page=${page}&limit=${limit}`);
+    return response;
+  } catch (error) {
+    const { response: { data = [] } = "" } = error;
+    return data[0];
+  }
+};
+
 //Categoria
 export const listCategories = async () => {
   try {

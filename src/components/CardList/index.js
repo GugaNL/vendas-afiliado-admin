@@ -2,39 +2,36 @@ import React, { useMemo } from "react";
 import { useNavigate, createSearchParams } from "react-router-dom";
 import { Container, TagColor, BtnCard } from "./styles";
 import { PAGE_NEW_PRODUCT } from "../../constants";
-import { formatDate } from "../../utils/helpers";
 
 const CardList = (props) => {
   const { item = {} } = props;
-  const { status = "" } = item;
   const navigate = useNavigate();
 
   const tagColor = useMemo(() => {
     let color = (props) => props.theme.color.danger;
-    if (status === "ativo") {
+    if (item?.store === "amazon" || item?.store === "Amazon") {
       color = (props) => props.theme.color.green;
-    } else if (status === "finalizado") {
+    } else if (item?.store === "shopee" || item?.store === "Shopee") {
       color = (props) => props.theme.color.blue;
     }
 
     return color;
-  }, [status]);
+  }, [item?.store]);
 
   return (
     <Container
       onClick={() =>
         navigate({
           pathname: PAGE_NEW_PRODUCT,
-          search: createSearchParams({ prizeDrawToEdit: item.id }).toString(),
+          search: createSearchParams({ productToEdit: item.id }).toString(),
         })
       }
     >
       <TagColor colorStatus={tagColor} />
       <BtnCard>
-        <span>{item?.titulo}</span>
-        <small>{item?.data && formatDate(item.data)}</small>
+        <span>{item?.title}</span>
+        <small>{item?.store}</small>
       </BtnCard>
-      <h3>{item?.bilhetesVendidos} vendidos</h3>
     </Container>
   );
 };
