@@ -156,11 +156,7 @@ export const createCategory = async (category) => {
 
 export const listCategories = async () => {
   try {
-    const response = await api.get("categoria/lista", {
-      headers: {
-        token,
-      },
-    });
+    const response = await api.get("categoria/lista");
     return response;
   } catch (error) {
     const { response: { data = [], status = "" } = "" } = error;
