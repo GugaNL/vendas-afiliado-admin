@@ -34,13 +34,16 @@ export const newProduct = async (product = {}) => {
   formData.append("brand", product?.brand);
   formData.append("store", product?.store);
   formData.append("linkAfiliate", product?.linkAfiliate);
-  formData.append("uploadedImage", productImage[0]);
+  if (productImage.length > 0) {
+    formData.append("uploadedImage", productImage[0]);
+  }
   formData.append("categoryId", product?.categoryId);
   formData.append("oldPrice", product?.oldPrice);
   formData.append("newPrice", product?.newPrice);
   formData.append("discount", product?.discount);
   formData.append("obs1", product?.obs1);
   formData.append("obs2", product?.obs2);
+  formData.append("iframeUrl", product?.iframeUrl);
 
   try {
     const response = await api.post("produto/novo", formData, {
@@ -77,6 +80,7 @@ export const updateProduct = async (product = {}) => {
   formData.append("discount", product?.discount);
   formData.append("obs1", product?.obs1);
   formData.append("obs2", product?.obs2);
+  formData.append("iframeUrl", product?.iframeUrl);
 
   try {
     const response = await api.put(`produto/${product.id}`, formData, {

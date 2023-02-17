@@ -20,12 +20,19 @@ import {
   BtnConfirm,
   ContainerTicket,
   ContentLoader,
-  EmptyErrorText
+  EmptyErrorText,
+  IframeUrlText,
+  FieldContentCheckbox,
 } from "./styles";
 import { CheckAuthContext } from "../../contexts";
 import ContentHeader from "../../components/ContentHeader";
-import { ImageTypeRegex, baseURL } from "../../constants";
-import { newProduct, updateProduct, listCategories, findProduct } from "../../services/api";
+import { ImageTypeRegex, baseURL, PAGE_LIST_PRODUCTS } from "../../constants";
+import {
+  newProduct,
+  updateProduct,
+  listCategories,
+  findProduct,
+} from "../../services/api";
 
 const RegisterProduct = () => {
   const { setIsLogged } = useContext(CheckAuthContext);
@@ -45,11 +52,13 @@ const RegisterProduct = () => {
     discount: "",
     obs1: "",
     obs2: "",
+    iframeUrl: "",
     productImage: [],
   });
   const [categoryErrorMsg, setCategoryErrorMsg] = useState("");
   const [titleErrorMsg, setTitleErrorMsg] = useState("");
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [isPromotion, setIsPromotion] = useState(false);
   const [imageFiles, setImageFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const fileRef = useRef();
@@ -79,10 +88,10 @@ const RegisterProduct = () => {
   };
 
   const loadProduct = async () => {
-     setLoading(true);
-     const response = await findProduct(productToEdit);
-     const { data: responseFindProduct = {} } = response;
-     if (responseFindProduct && responseFindProduct.success) {
+    setLoading(true);
+    const response = await findProduct(productToEdit);
+    const { data: responseFindProduct = {} } = response;
+    if (responseFindProduct && responseFindProduct.success) {
       const { product = {} } = responseFindProduct;
       const imageUrl = product.imagePath ? baseURL + product.imagePath : "";
       setValues({
@@ -97,11 +106,12 @@ const RegisterProduct = () => {
         discount: product.discount || "",
         obs1: product.obs1 || "",
         obs2: product.obs2 || "",
-        productImage: [imageUrl]
-      })
+        iframeUrl: product.iframeUrl || "",
+        productImage: [imageUrl],
+      });
       setUploadedImages([product.imagePath]);
       setLoading(false);
-     } else {
+    } else {
       toast.error("Falha ao carregar o produto", {
         position: "top-right",
         autoClose: 2000,
@@ -111,7 +121,7 @@ const RegisterProduct = () => {
         draggable: false,
         progress: undefined,
       });
-     }
+    }
   };
 
   const loadCategories = useCallback(async () => {
@@ -204,7 +214,11 @@ const RegisterProduct = () => {
       const response = await newProduct(payload);
       const { data: responseSaveProduct = {} } = response;
       if (responseSaveProduct && responseSaveProduct.success) {
+        setLoading(false);
         showToast("Produto criado com sucesso", "success");
+        setTimeout(() => {
+          navigate(PAGE_LIST_PRODUCTS);
+        }, 2500);
       } else {
         setLoading(false);
         if (response === 401) {
@@ -219,6 +233,9 @@ const RegisterProduct = () => {
       if (responseUpdateProduct && responseUpdateProduct.success) {
         setLoading(false);
         showToast("Produto alterado com sucesso", "success");
+        setTimeout(() => {
+          navigate(PAGE_LIST_PRODUCTS);
+        }, 2500);
       } else {
         setLoading(false);
         if (response === 401) {
@@ -297,7 +314,9 @@ const RegisterProduct = () => {
                   </option>
                 ))}
             </select>
-            {categoryErrorMsg && <EmptyErrorText>{categoryErrorMsg}</EmptyErrorText>}
+            {categoryErrorMsg && (
+              <EmptyErrorText>{categoryErrorMsg}</EmptyErrorText>
+            )}
           </FieldContent>
 
           <ContainerTicket>
@@ -358,45 +377,72 @@ const RegisterProduct = () => {
             </button>
           </FieldContent>
 
-          <ContainerTicket>
+          <FieldContentCheckbox>
+            <label>Promoção</label>
+            <input
+              id="iptPromotionField"
+              name="promotion"
+              type="checkbox"
+              checked={isPromotion}
+              onChange={() => setIsPromotion(!isPromotion)}
+            />
+          </FieldContentCheckbox>
+
+          {!isPromotion ? (
             <FieldContent>
-              <label>Preço antigo</label>
+              <label>Preço</label>
               <input
                 id="iptOldPriceField"
                 name="oldPrice"
                 type="text"
                 pattern="[0-9]*"
-                className="input-oldprice"
+                className="input-price"
                 value={values.oldPrice || ""}
                 onChange={(event) => onChangeInput(event.target)}
               />
             </FieldContent>
-            <FieldContent>
-              <label>Preço novo</label>
-              <input
-                id="iptNewPriceField"
-                name="newPrice"
-                type="text"
-                //pattern='[0-9]'
-                className="input-newprice"
-                value={values.newPrice || ""}
-                onChange={(event) => onChangeInput(event.target)}
-              />
-            </FieldContent>
-          </ContainerTicket>
-
-          <FieldContent>
-            <label>Desconto</label>
-            <input
-              id="iptDiscountField"
-              name="discount"
-              type="text"
-              autoCapitalize="words"
-              className="input-discount"
-              value={values.discount || ""}
-              onChange={(event) => onChangeInput(event.target)}
-            />
-          </FieldContent>
+          ) : (
+            <>
+              <ContainerTicket>
+                <FieldContent>
+                  <label>Preço antigo</label>
+                  <input
+                    id="iptOldPriceField"
+                    name="oldPrice"
+                    type="text"
+                    pattern="[0-9]*"
+                    className="input-price"
+                    value={values.oldPrice || ""}
+                    onChange={(event) => onChangeInput(event.target)}
+                  />
+                </FieldContent>
+                <FieldContent>
+                  <label>Preço novo</label>
+                  <input
+                    id="iptNewPriceField"
+                    name="newPrice"
+                    type="text"
+                    //pattern='[0-9]'
+                    className="input-price"
+                    value={values.newPrice || ""}
+                    onChange={(event) => onChangeInput(event.target)}
+                  />
+                </FieldContent>
+              </ContainerTicket>
+              <FieldContent>
+                <label>Desconto</label>
+                <input
+                  id="iptDiscountField"
+                  name="discount"
+                  type="text"
+                  autoCapitalize="words"
+                  className="input-discount"
+                  value={values.discount || ""}
+                  onChange={(event) => onChangeInput(event.target)}
+                />
+              </FieldContent>
+            </>
+          )}
 
           <FieldContent>
             <label>Observação 1</label>
@@ -420,6 +466,18 @@ const RegisterProduct = () => {
               autoCapitalize="words"
               className="input-obs"
               value={values.obs2 || ""}
+              onChange={(event) => onChangeInput(event.target)}
+            />
+          </FieldContent>
+
+          <FieldContent>
+            <label>Url do Iframe</label>
+            <IframeUrlText
+              id="iptIframeUrlField"
+              name="iframeUrl"
+              autoCapitalize="words"
+              value={values.iframeUrl || ""}
+              rows={4}
               onChange={(event) => onChangeInput(event.target)}
             />
           </FieldContent>

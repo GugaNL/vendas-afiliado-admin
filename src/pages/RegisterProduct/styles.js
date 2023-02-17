@@ -21,6 +21,7 @@ export const FieldContent = styled.div`
     border-radius: 5px;
     width: 350px;
     margin-top: 3px;
+    background-color: ${(props) => props.theme.color.white};
   }
 
   .btn-add {
@@ -62,6 +63,10 @@ export const FieldContent = styled.div`
 
   .input-brand {
     width: 200px;
+  }
+
+  .input-price {
+    width: 150px;
   }
 
   .input-discount {
@@ -225,3 +230,20 @@ export const EmptyErrorText = styled.span`
   color: ${(props) => props.theme.color.darkBlue};
   margin-top: 3px;
 `;
+
+export const IframeUrlText = styled.textarea`
+  padding: 8px;
+  border-radius: 5px;
+  margin-top: 3px;
+`
+
+export const FieldContentCheckbox = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 25px;
+  color: ${(props) => props.theme.color.white};
+
+  > input {
+    margin-left: 5px;
+  }
+`
