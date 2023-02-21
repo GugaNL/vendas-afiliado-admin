@@ -100,7 +100,7 @@ const RegisterProduct = () => {
     const { data: responseFindProduct = {} } = response;
     if (responseFindProduct && responseFindProduct.success) {
       const { product = {} } = responseFindProduct;
-      const imageUrl = product.imagePath ? baseURL + product.imagePath : "";
+      //const imageUrl = product.imagePath ? baseURL + product.imagePath : "";
       setValues({
         id: product.id || null,
         title: product.title || "",
@@ -114,7 +114,7 @@ const RegisterProduct = () => {
         obs1: product.obs1 || "",
         obs2: product.obs2 || "",
         iframeUrl: product.iframeUrl || "",
-        imagePath: imageUrl,
+        imagePath: product.imagePath,
         //productImage: [imageUrl],
       });
       //setUploadedImages([product.imagePath]);

@@ -46,6 +46,23 @@ export const newProduct = async (product = {}) => {
   // formData.append("obs2", product?.obs2);
   // formData.append("iframeUrl", product?.iframeUrl);
 
+  if (!product.id) {
+    delete product.id;
+  }
+
+  if (!product.oldPrice) {
+    product.oldPrice = 0.0
+  }
+
+  if (!product.newPrice) {
+    product.newPrice = 0.0
+  }
+
+  if (!product.discount) {
+    product.discount = 0;
+  }
+
+
   try {
     const response = await api.post("produto/novo", product, {
       headers: {
@@ -83,6 +100,18 @@ export const updateProduct = async (product = {}) => {
   // formData.append("obs1", product?.obs1);
   // formData.append("obs2", product?.obs2);
   // formData.append("iframeUrl", product?.iframeUrl);
+
+  if (!product.oldPrice) {
+    product.oldPrice = 0.0;
+  }
+
+  if (!product.newPrice) {
+    product.newPrice = 0.0;
+  }
+
+  if (!product.discount) {
+    product.discount = 0;
+  }
 
   try {
     const response = await api.put(`produto/${product.id}`, product, {
