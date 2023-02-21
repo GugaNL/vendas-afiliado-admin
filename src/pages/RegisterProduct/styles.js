@@ -235,7 +235,7 @@ export const IframeUrlText = styled.textarea`
   padding: 8px;
   border-radius: 5px;
   margin-top: 3px;
-`
+`;
 
 export const FieldContentCheckbox = styled.div`
   display: flex;
@@ -246,4 +246,18 @@ export const FieldContentCheckbox = styled.div`
   > input {
     margin-left: 5px;
   }
-`
+`;
+
+export const ImagePathUrl = styled.img`
+  width: 200px;
+  height: 200px;
+`;
+
+export const PreviewBtn = styled.button`
+  width: 100px;
+  margin-top: 12px;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: ${(props) => props.theme.color.darkBlue};
+  color: ${(props) => props.theme.color.white};
+`;
