@@ -27,28 +27,29 @@ export const loginUser = async (email, password) => {
 
 //Produto
 export const newProduct = async (product = {}) => {
-  const formData = new FormData();
-  const { productImage = [] } = product;
+  //const formData = new FormData();
+  //const { productImage = [] } = product;
 
-  formData.append("title", product?.title);
-  formData.append("brand", product?.brand);
-  formData.append("store", product?.store);
-  formData.append("linkAfiliate", product?.linkAfiliate);
-  if (productImage.length > 0) {
-    formData.append("uploadedImage", productImage[0]);
-  }
-  formData.append("categoryId", product?.categoryId);
-  formData.append("oldPrice", product?.oldPrice);
-  formData.append("newPrice", product?.newPrice);
-  formData.append("discount", product?.discount);
-  formData.append("obs1", product?.obs1);
-  formData.append("obs2", product?.obs2);
-  formData.append("iframeUrl", product?.iframeUrl);
+  // formData.append("title", product?.title);
+  // formData.append("brand", product?.brand);
+  // formData.append("store", product?.store);
+  // formData.append("imagePath", product?.imagePath);
+  // formData.append("linkAfiliate", product?.linkAfiliate);
+  // // if (productImage.length > 0) {
+  // //   formData.append("uploadedImage", productImage[0]);
+  // // }
+  // formData.append("categoryId", product?.categoryId);
+  // formData.append("oldPrice", product?.oldPrice);
+  // formData.append("newPrice", product?.newPrice);
+  // formData.append("discount", product?.discount);
+  // formData.append("obs1", product?.obs1);
+  // formData.append("obs2", product?.obs2);
+  // formData.append("iframeUrl", product?.iframeUrl);
 
   try {
-    const response = await api.post("produto/novo", formData, {
+    const response = await api.post("produto/novo", product, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        //"Content-Type": "multipart/form-data",
         token,
       },
     });
@@ -64,28 +65,29 @@ export const newProduct = async (product = {}) => {
 };
 
 export const updateProduct = async (product = {}) => {
-  const formData = new FormData();
-  const { productImage = [] } = product;
+  //const formData = new FormData();
+  //const { productImage = [] } = product;
 
-  formData.append("title", product?.title);
-  formData.append("brand", product?.brand);
-  formData.append("store", product?.store);
-  formData.append("linkAfiliate", product?.linkAfiliate);
-  if (productImage.length > 0) {
-    formData.append("uploadedImage", productImage[0]);
-  }
-  formData.append("categoryId", product?.categoryId);
-  formData.append("oldPrice", product?.oldPrice);
-  formData.append("newPrice", product?.newPrice);
-  formData.append("discount", product?.discount);
-  formData.append("obs1", product?.obs1);
-  formData.append("obs2", product?.obs2);
-  formData.append("iframeUrl", product?.iframeUrl);
+  // formData.append("title", product?.title);
+  // formData.append("brand", product?.brand);
+  // formData.append("store", product?.store);
+  // formData.append("imagePath", product?.imagePath);
+  // formData.append("linkAfiliate", product?.linkAfiliate);
+  // // if (productImage.length > 0) {
+  // //   formData.append("uploadedImage", productImage[0]);
+  // // }
+  // formData.append("categoryId", product?.categoryId);
+  // formData.append("oldPrice", product?.oldPrice);
+  // formData.append("newPrice", product?.newPrice);
+  // formData.append("discount", product?.discount);
+  // formData.append("obs1", product?.obs1);
+  // formData.append("obs2", product?.obs2);
+  // formData.append("iframeUrl", product?.iframeUrl);
 
   try {
-    const response = await api.put(`produto/${product.id}`, formData, {
+    const response = await api.put(`produto/${product.id}`, product, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        //"Content-Type": "multipart/form-data",
         token,
       },
     });
@@ -140,7 +142,7 @@ export const removeProduct = async (id) => {
 //Categoria
 export const createCategory = async (category) => {
   try {
-    const response = await api.post("categoria/novo", {
+    const response = await api.post("categoria/novo", { 
       name: category.name
     }, {
       headers: {

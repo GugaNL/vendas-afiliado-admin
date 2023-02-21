@@ -1,7 +1,7 @@
 import React, {
   useState,
   useEffect,
-  useRef,
+  //useRef,
   useContext,
   useCallback,
 } from "react";
@@ -9,13 +9,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Puff } from "react-loader-spinner";
-import { MdCloudUpload, MdDelete } from "react-icons/md";
+//import { MdCloudUpload, MdDelete } from "react-icons/md";
 import {
   Container,
   Content,
   FieldContent,
-  ContentUploadImage,
-  BtnDeleteImg,
+  //ContentUploadImage,
+  //BtnDeleteImg,
+  PreviewBtn,
+  ImagePathUrl,
   ContainerImagesUpload,
   BtnConfirm,
   ContainerTicket,
@@ -26,7 +28,10 @@ import {
 } from "./styles";
 import { CheckAuthContext } from "../../contexts";
 import ContentHeader from "../../components/ContentHeader";
-import { ImageTypeRegex, baseURL, PAGE_LIST_PRODUCTS } from "../../constants";
+import {
+  /*ImageTypeRegex,*/ baseURL,
+  PAGE_LIST_PRODUCTS,
+} from "../../constants";
 import {
   newProduct,
   updateProduct,
@@ -53,15 +58,17 @@ const RegisterProduct = () => {
     obs1: "",
     obs2: "",
     iframeUrl: "",
-    productImage: [],
+    imagePath: "",
+    //productImage: [],
   });
   const [categoryErrorMsg, setCategoryErrorMsg] = useState("");
   const [titleErrorMsg, setTitleErrorMsg] = useState("");
-  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isShowImage, setIsShowImage] = useState(false);
+  //const [uploadedImages, setUploadedImages] = useState([]);
   const [isPromotion, setIsPromotion] = useState(false);
-  const [imageFiles, setImageFiles] = useState([]);
+  //const [imageFiles, setImageFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const fileRef = useRef();
+  //const fileRef = useRef();
 
   const showToast = (message, type) => {
     if (type === "success") {
@@ -107,9 +114,10 @@ const RegisterProduct = () => {
         obs1: product.obs1 || "",
         obs2: product.obs2 || "",
         iframeUrl: product.iframeUrl || "",
-        productImage: [imageUrl],
+        imagePath: imageUrl,
+        //productImage: [imageUrl],
       });
-      setUploadedImages([product.imagePath]);
+      //setUploadedImages([product.imagePath]);
       setLoading(false);
     } else {
       toast.error("Falha ao carregar o produto", {
@@ -165,35 +173,35 @@ const RegisterProduct = () => {
     setValues({ ...values, [inputName]: inputValue });
   };
 
-  useEffect(() => {
-    if (imageFiles.length < 1) return;
+  // useEffect(() => {
+  //   if (imageFiles.length < 1) return;
 
-    const newImageUrls = [];
-    newImageUrls.push(URL.createObjectURL(imageFiles[0]));
-    setValues({
-      ...values,
-      productImage: newImageUrls,
-    });
-  }, [imageFiles]);
+  //   const newImageUrls = [];
+  //   newImageUrls.push(URL.createObjectURL(imageFiles[0]));
+  //   setValues({
+  //     ...values,
+  //     productImage: newImageUrls,
+  //   });
+  // }, [imageFiles]);
 
-  const onImageChange = (evt) => {
-    const { files = [] } = evt;
-    if (files.length > 0 && files[0].type.match(ImageTypeRegex)) {
-      return setImageFiles([files[0]]);
-    }
-    alert("Apenas arquivos .jpeg ou .png");
-  };
+  // const onImageChange = (evt) => {
+  //   const { files = [] } = evt;
+  //   if (files.length > 0 && files[0].type.match(ImageTypeRegex)) {
+  //     return setImageFiles([files[0]]);
+  //   }
+  //   alert("Apenas arquivos .jpeg ou .png");
+  // };
 
-  const removeImage = (isUploadedImage = false) => {
-    if (isUploadedImage) {
-      let arrayAuxImages = uploadedImages;
-      arrayAuxImages.splice(0, 1);
-      setUploadedImages([...arrayAuxImages]);
-    } else {
-      setImageFiles([]);
-      setValues({ ...values, productImage: [] });
-    }
-  };
+  // const removeImage = (isUploadedImage = false) => {
+  //   if (isUploadedImage) {
+  //     let arrayAuxImages = uploadedImages;
+  //     arrayAuxImages.splice(0, 1);
+  //     setUploadedImages([...arrayAuxImages]);
+  //   } else {
+  //     setImageFiles([]);
+  //     setValues({ ...values, productImage: [] });
+  //   }
+  // };
 
   const saveProduct = async () => {
     if (!values.title) {
@@ -207,7 +215,7 @@ const RegisterProduct = () => {
     setLoading(true);
     const payload = {
       ...values,
-      productImage: imageFiles,
+      //productImage: imageFiles,
     };
 
     if (!values.id) {
@@ -247,6 +255,10 @@ const RegisterProduct = () => {
     }
   };
 
+  const toggleShowPreview = () => {
+    setIsShowImage(!isShowImage);
+  };
+
   return (
     <Container>
       {loading && (
@@ -283,8 +295,32 @@ const RegisterProduct = () => {
             {titleErrorMsg && <EmptyErrorText>{titleErrorMsg}</EmptyErrorText>}
           </FieldContent>
 
+          {isShowImage && (
+            <ContainerImagesUpload>
+              <ImagePathUrl src={values.imagePath} alt="" />
+            </ContainerImagesUpload>
+          )}
+
           <FieldContent>
-            <label>Link</label>
+            <label>Url da imagem</label>
+            <IframeUrlText
+              id="iptImagePathField"
+              name="imagePath"
+              autoCapitalize="words"
+              value={values.imagePath || ""}
+              rows={4}
+              onChange={(event) => onChangeInput(event.target)}
+            />
+
+            {values.imagePath && (
+              <PreviewBtn onClick={() => toggleShowPreview()}>
+                {isShowImage ? "Limpar" : "Visualizar"}
+              </PreviewBtn>
+            )}
+          </FieldContent>
+
+          <FieldContent>
+            <label>Link de redirecionamento</label>
             <input
               id="iptLinkAfiliateField"
               name="linkAfiliate"
@@ -346,7 +382,7 @@ const RegisterProduct = () => {
             </FieldContent>
           </ContainerTicket>
 
-          <ContainerImagesUpload>
+          {/* <ContainerImagesUpload>
             {values.productImage && values.productImage.length > 0 && (
               <ContentUploadImage>
                 <img src={values.productImage[0]} alt="imagem para upload" />
@@ -355,9 +391,9 @@ const RegisterProduct = () => {
                 </BtnDeleteImg>
               </ContentUploadImage>
             )}
-          </ContainerImagesUpload>
+          </ContainerImagesUpload> */}
 
-          <FieldContent>
+          {/* <FieldContent>
             <label>Imagem</label>
             <input
               id="iptPrizeImageField"
@@ -375,7 +411,7 @@ const RegisterProduct = () => {
             >
               <MdCloudUpload />
             </button>
-          </FieldContent>
+          </FieldContent> */}
 
           <FieldContentCheckbox>
             <label>Promoção</label>
