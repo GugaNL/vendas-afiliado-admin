@@ -8,7 +8,8 @@ import CardList from "../../components/CardList";
 import { listProducts } from "../../services/api";
 
 const ListProducts = () => {
-  const limit = 5;
+  const limit = 4;
+  const page = 1;
 
   const [products, setProducts] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
@@ -44,7 +45,7 @@ const ListProducts = () => {
   };
 
   useEffect(() => {
-    fetchList();
+    fetchList(page, limit);
   }, []);
 
   const filterList = (filterStatus) => {
