@@ -63,7 +63,6 @@ const RegisterProduct = () => {
   });
   const [categoryErrorMsg, setCategoryErrorMsg] = useState("");
   const [titleErrorMsg, setTitleErrorMsg] = useState("");
-  const [isShowImage, setIsShowImage] = useState(false);
   //const [uploadedImages, setUploadedImages] = useState([]);
   const [isPromotion, setIsPromotion] = useState(false);
   //const [imageFiles, setImageFiles] = useState([]);
@@ -255,10 +254,6 @@ const RegisterProduct = () => {
     }
   };
 
-  const toggleShowPreview = () => {
-    setIsShowImage(!isShowImage);
-  };
-
   return (
     <Container>
       {loading && (
@@ -295,12 +290,6 @@ const RegisterProduct = () => {
             {titleErrorMsg && <EmptyErrorText>{titleErrorMsg}</EmptyErrorText>}
           </FieldContent>
 
-          {isShowImage && (
-            <ContainerImagesUpload>
-              <ImagePathUrl src={values.imagePath} alt="" />
-            </ContainerImagesUpload>
-          )}
-
           <FieldContent>
             <label>Url da imagem</label>
             <IframeUrlText
@@ -311,12 +300,6 @@ const RegisterProduct = () => {
               rows={4}
               onChange={(event) => onChangeInput(event.target)}
             />
-
-            {values.imagePath && (
-              <PreviewBtn onClick={() => toggleShowPreview()}>
-                {isShowImage ? "Limpar" : "Visualizar"}
-              </PreviewBtn>
-            )}
           </FieldContent>
 
           <FieldContent>
