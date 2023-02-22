@@ -261,3 +261,13 @@ export const PreviewBtn = styled.button`
   background-color: ${(props) => props.theme.color.darkBlue};
   color: ${(props) => props.theme.color.white};
 `;
+
+export const ContentRadios = styled.div`
+  display: flex;
+  color: ${(props) => props.theme.color.white};
+  margin-top: 25px;
+
+  > div {
+    padding-right: 16px;
+  }
+`;

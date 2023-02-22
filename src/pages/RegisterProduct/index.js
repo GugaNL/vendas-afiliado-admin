@@ -1,7 +1,6 @@
 import React, {
   useState,
   useEffect,
-  //useRef,
   useContext,
   useCallback,
 } from "react";
@@ -9,13 +8,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Puff } from "react-loader-spinner";
-//import { MdCloudUpload, MdDelete } from "react-icons/md";
 import {
   Container,
   Content,
   FieldContent,
-  //ContentUploadImage,
-  //BtnDeleteImg,
   PreviewBtn,
   ImagePathUrl,
   ContainerImagesUpload,
@@ -25,13 +21,11 @@ import {
   EmptyErrorText,
   IframeUrlText,
   FieldContentCheckbox,
+  ContentRadios,
 } from "./styles";
 import { CheckAuthContext } from "../../contexts";
 import ContentHeader from "../../components/ContentHeader";
-import {
-  /*ImageTypeRegex,*/ baseURL,
-  PAGE_LIST_PRODUCTS,
-} from "../../constants";
+import { PAGE_LIST_PRODUCTS } from "../../constants";
 import {
   newProduct,
   updateProduct,
@@ -59,15 +53,15 @@ const RegisterProduct = () => {
     obs2: "",
     iframeUrl: "",
     imagePath: "",
-    //productImage: [],
+    imgUrlTag1: "",
+    imgUrlTag2: "",
+    imgUrlTag3: "",
   });
   const [categoryErrorMsg, setCategoryErrorMsg] = useState("");
   const [titleErrorMsg, setTitleErrorMsg] = useState("");
-  //const [uploadedImages, setUploadedImages] = useState([]);
+  const [isImgUrlWithTags, setIsImgUrlWithTags] = useState(false);
   const [isPromotion, setIsPromotion] = useState(false);
-  //const [imageFiles, setImageFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  //const fileRef = useRef();
 
   const showToast = (message, type) => {
     if (type === "success") {
@@ -99,7 +93,6 @@ const RegisterProduct = () => {
     const { data: responseFindProduct = {} } = response;
     if (responseFindProduct && responseFindProduct.success) {
       const { product = {} } = responseFindProduct;
-      //const imageUrl = product.imagePath ? baseURL + product.imagePath : "";
       setValues({
         id: product.id || null,
         title: product.title || "",
@@ -114,9 +107,13 @@ const RegisterProduct = () => {
         obs2: product.obs2 || "",
         iframeUrl: product.iframeUrl || "",
         imagePath: product.imagePath,
-        //productImage: [imageUrl],
+        imgUrlTag1: product.imgUrlTag1 || "",
+        imgUrlTag2: product.imgUrlTag2 || "",
+        imgUrlTag3: product.imgUrlTag3 || "",
       });
-      //setUploadedImages([product.imagePath]);
+      if (product.imgUrlTag1 || product.imgUrlTag2 || product.imgUrlTag3) {
+        setIsImgUrlWithTags(true);
+      }
       setLoading(false);
     } else {
       toast.error("Falha ao carregar o produto", {
@@ -172,36 +169,6 @@ const RegisterProduct = () => {
     setValues({ ...values, [inputName]: inputValue });
   };
 
-  // useEffect(() => {
-  //   if (imageFiles.length < 1) return;
-
-  //   const newImageUrls = [];
-  //   newImageUrls.push(URL.createObjectURL(imageFiles[0]));
-  //   setValues({
-  //     ...values,
-  //     productImage: newImageUrls,
-  //   });
-  // }, [imageFiles]);
-
-  // const onImageChange = (evt) => {
-  //   const { files = [] } = evt;
-  //   if (files.length > 0 && files[0].type.match(ImageTypeRegex)) {
-  //     return setImageFiles([files[0]]);
-  //   }
-  //   alert("Apenas arquivos .jpeg ou .png");
-  // };
-
-  // const removeImage = (isUploadedImage = false) => {
-  //   if (isUploadedImage) {
-  //     let arrayAuxImages = uploadedImages;
-  //     arrayAuxImages.splice(0, 1);
-  //     setUploadedImages([...arrayAuxImages]);
-  //   } else {
-  //     setImageFiles([]);
-  //     setValues({ ...values, productImage: [] });
-  //   }
-  // };
-
   const saveProduct = async () => {
     if (!values.title) {
       return setTitleErrorMsg("Nome obrigatório");
@@ -214,16 +181,15 @@ const RegisterProduct = () => {
     setLoading(true);
     const payload = {
       ...values,
-      //productImage: imageFiles,
     };
 
     if (!values.id) {
       const response = await newProduct(payload);
       const { data: responseSaveProduct = {} } = response;
       if (responseSaveProduct && responseSaveProduct.success) {
-        setLoading(false);
         showToast("Produto criado com sucesso", "success");
         setTimeout(() => {
+          setLoading(false);
           navigate(PAGE_LIST_PRODUCTS);
         }, 2500);
       } else {
@@ -290,17 +256,82 @@ const RegisterProduct = () => {
             {titleErrorMsg && <EmptyErrorText>{titleErrorMsg}</EmptyErrorText>}
           </FieldContent>
 
-          <FieldContent>
-            <label>Url da imagem</label>
-            <IframeUrlText
-              id="iptImagePathField"
-              name="imagePath"
-              autoCapitalize="words"
-              value={values.imagePath || ""}
-              rows={4}
-              onChange={(event) => onChangeInput(event.target)}
-            />
-          </FieldContent>
+          <ContentRadios>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  value="imgUrlWithoutTags"
+                  checked={!isImgUrlWithTags ? true : false}
+                  name="imgUrl"
+                  onChange={() => setIsImgUrlWithTags(false)}
+                />{" "}
+                Url simples
+              </label>
+            </div>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  value="imgUrlWithTags"
+                  name="imgUrl"
+                  checked={isImgUrlWithTags ? true : false}
+                  onChange={() => setIsImgUrlWithTags(true)}
+                />{" "}
+                Url com tags
+              </label>
+            </div>
+          </ContentRadios>
+
+          {isImgUrlWithTags ? (
+            <>
+              <FieldContent>
+                <label>Url da primeira tag</label>
+                <IframeUrlText
+                  id="iptImgUrlTag1Field"
+                  name="imgUrlTag1"
+                  autoCapitalize="words"
+                  value={values.imgUrlTag1 || ""}
+                  rows={5}
+                  onChange={(event) => onChangeInput(event.target)}
+                />
+              </FieldContent>
+              <FieldContent>
+                <label>Url da segunda tag</label>
+                <IframeUrlText
+                  id="iptImgUrlTag1Field"
+                  name="imgUrlTag2"
+                  autoCapitalize="words"
+                  value={values.imgUrlTag2 || ""}
+                  rows={4}
+                  onChange={(event) => onChangeInput(event.target)}
+                />
+              </FieldContent>
+              <FieldContent>
+                <label>Url da terceira tag</label>
+                <IframeUrlText
+                  id="iptImgUrlTag3Field"
+                  name="imgUrlTag3"
+                  autoCapitalize="words"
+                  value={values.imgUrlTag3 || ""}
+                  rows={3}
+                  onChange={(event) => onChangeInput(event.target)}
+                />
+              </FieldContent>
+            </>
+          ) : (
+            <FieldContent>
+              <label>Url da imagem</label>
+              <IframeUrlText
+                id="iptImagePathField"
+                name="imagePath"
+                autoCapitalize="words"
+                value={values.imagePath || ""}
+                rows={4}
+                onChange={(event) => onChangeInput(event.target)}
+              />
+            </FieldContent>
+          )}
 
           <FieldContent>
             <label>Link de redirecionamento</label>
@@ -364,37 +395,6 @@ const RegisterProduct = () => {
               />
             </FieldContent>
           </ContainerTicket>
-
-          {/* <ContainerImagesUpload>
-            {values.productImage && values.productImage.length > 0 && (
-              <ContentUploadImage>
-                <img src={values.productImage[0]} alt="imagem para upload" />
-                <BtnDeleteImg onClick={() => removeImage(false)}>
-                  <MdDelete />
-                </BtnDeleteImg>
-              </ContentUploadImage>
-            )}
-          </ContainerImagesUpload> */}
-
-          {/* <FieldContent>
-            <label>Imagem</label>
-            <input
-              id="iptPrizeImageField"
-              name="prizeImage"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(evt) => onImageChange(evt.target)}
-              hidden
-              ref={fileRef}
-            />
-            <button
-              className="btn-upload"
-              onClick={() => fileRef.current.click()}
-            >
-              <MdCloudUpload />
-            </button>
-          </FieldContent> */}
 
           <FieldContentCheckbox>
             <label>Promoção</label>
@@ -496,7 +496,7 @@ const RegisterProduct = () => {
               name="iframeUrl"
               autoCapitalize="words"
               value={values.iframeUrl || ""}
-              rows={4}
+              rows={5}
               onChange={(event) => onChangeInput(event.target)}
             />
           </FieldContent>

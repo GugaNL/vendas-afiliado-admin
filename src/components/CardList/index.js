@@ -66,10 +66,10 @@ const CardList = (props) => {
 
     if (responseRemoveCategory && responseRemoveCategory.success) {
       setShowModal(false);
-      setLoading(false);
       showToast("Categoria removida com sucesso", "success");
 
       setTimeout(() => {
+        setLoading(false);
         window.location.reload();
       }, 2000);
     } else {
