@@ -26,8 +26,8 @@ const Login = () => {
   return (
     <Container>
       <Logo>
-        <img src={logoImg} alt="Sorteio Admin" />
-        <h2>Sorteio Admin</h2>
+        <img src={logoImg} alt="Afiliado Admin" />
+        <h2>Afiliado Admin</h2>
       </Logo>
       <Form>
         <FormTitle>Entrar</FormTitle>

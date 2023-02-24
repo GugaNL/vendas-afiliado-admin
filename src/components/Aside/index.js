@@ -49,7 +49,7 @@ const Aside = () => {
         <ToogleMenu onClick={() => handleToggleMenu()}>
           {showToggleMenu ? <MdClose /> : <MdMenu />}
         </ToogleMenu>
-        <Logo src={logo} alt="Logo sorteio" />
+        <Logo src={logo} alt="Logo afiliado" />
         <Title>Afiliado Adm</Title>
       </Header>
       <MenuContainer>

@@ -3,7 +3,7 @@ import { Container, Profile, Welcome, Username } from "./styles";
 import { emojis } from "../../utils";
 
 const Header = (props) => {
-  const adminUser = localStorage.getItem("@sorteio-admin:user") || "";
+  const adminUser = localStorage.getItem("@vendas-afiliado-admin:user") || "";
   
   return (
     <Container>
